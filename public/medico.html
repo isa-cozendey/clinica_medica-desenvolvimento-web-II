@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Médico - Quero Saúde</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --verde-escuro: #064e3b;
+            --verde-principal: #22c55e;
+            --verde-suave: #dcfce7;
+            --branco: #ffffff;
+            --fonte-titulo: 'Montserrat', sans-serif;
+            --fonte-corpo: 'Inter', sans-serif;
+        }
+
+        body { 
+            font-family: var(--fonte-corpo); 
+            background-color: #f8fafc; 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+        }
+
+        .container {
+            display: flex;
+            gap: 30px;
+            max-width: 1100px;
+            width: 95%;
+            height: 80vh; /* Altura fixa para scroll na lista */
+        }
+
+        /* Lado Esquerdo: Ação e Status */
+        .col-acao {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card-atendimento {
+            background: var(--branco);
+            padding: 50px;
+            border-radius: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        /* Lado Direito: Fila de Espera */
+        .col-fila {
+            flex: 0.8;
+            background: var(--branco);
+            padding: 30px;
+            border-radius: 40px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            border: 2px solid var(--verde-suave);
+        }
+
+        h2 { 
+            font-family: var(--fonte-titulo);
+            color: var(--verde-escuro); 
+            font-size: 2.2rem;
+            margin: 0 0 20px 0;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        .status-header {
+            text-transform: uppercase;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: var(--verde-principal);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        #pacienteAtual {
+            font-family: var(--fonte-titulo);
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--verde-escuro);
+            margin: 20px 0 40px 0;
+            line-height: 1.1;
+        }
+
+        .btn-chamar { 
+            width: 100%;
+            padding: 25px; 
+            background-color: var(--verde-principal); 
+            color: white; 
+            border: none; 
+            border-radius: 20px;
+            font-family: var(--fonte-titulo);
+            font-size: 1.5rem; 
+            font-weight: 800; 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 30px -5px rgba(34, 197, 94, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn-chamar:hover { 
+            background-color: var(--verde-escuro);
+            transform: scale(1.02);
+            box-shadow: 0 20px 35px -5px rgba(6, 78, 59, 0.3);
+        }
+
+        .btn-chamar:active { transform: scale(0.98); }
+
+        /* Estilo da Fila */
+        .lista-espera { 
+            list-style: none; 
+            padding: 0; 
+            margin: 0; 
+            overflow-y: auto; 
+            flex: 1;
+        }
+
+        .paciente-item { 
+            background: #f1f5f9; 
+            padding: 20px; 
+            margin-bottom: 12px; 
+            border-radius: 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border-left: 6px solid #cbd5e1;
+            transition: 0.3s;
+        }
+
+        .paciente-item.prioridade {
+            border-left-color: #facc15;
+            background: #fffbeb;
+        }
+
+        .nome-fila { font-weight: 700; font-size: 1.1rem; color: #334155; }
+
+        .badge-prioridade { 
+            background: #fef08a; 
+            color: #854d0e; 
+            padding: 5px 12px; 
+            border-radius: 8px; 
+            font-size: 0.75rem; 
+            font-weight: 800; 
+            text-transform: uppercase;
+        }
+
+        /* Scrollbar bonitinha */
+        .lista-espera::-webkit-scrollbar { width: 8px; }
+        .lista-espera::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="col-acao">
+            <div class="card-atendimento">
+                <span class="status-header">Atendimento Atual</span>
+                <h1 id="pacienteAtual">Ninguém</h1>
+                
+                <button class="btn-chamar" onclick="chamarProximo()">
+                    <span>🔔</span> CHAMAR PRÓXIMO
+                </button>
+            </div>
+
+            <div style="background: var(--verde-escuro); padding: 25px; border-radius: 30px; color: white;">
+                <p style="margin: 0; opacity: 0.7; font-size: 0.9rem;">Doutor(a),</p>
+                <p style="margin: 5px 0 0; font-weight: 600;">O sistema organiza automaticamente os pacientes prioritários no topo da fila.</p>
+            </div>
+        </div>
+
+        <div class="col-fila">
+            <h2 style="font-size: 1.5rem;">Fila de Espera</h2>
+            <ul id="listaEspera" class="lista-espera">
+                </ul>
+        </div>
+    </div>
+
+    <script>
+        async function atualizarDados() {
+            try {
+                const resposta = await fetch('/status');
+                const dados = await resposta.json();
+
+                const atual = document.getElementById('pacienteAtual');
+                atual.innerText = dados.chamadoAtual ? dados.chamadoAtual.nome : "Livre";
+
+                const lista = document.getElementById('listaEspera');
+                lista.innerHTML = "";
+
+                if(dados.fila.length === 0) {
+                    lista.innerHTML = '<li style="text-align:center; color:#94a3b8; margin-top:20px;">Fila vazia</li>';
+                }
+
+                dados.fila.forEach(paciente => {
+                    const item = document.createElement('li');
+                    item.className = 'paciente-item' + (paciente.prioridade === 1 ? ' prioridade' : '');
+
+                    const tag = paciente.prioridade === 1 ? '<span class="badge-prioridade">Prioritário</span>' : '';
+            
+                    item.innerHTML = `<span class="nome-fila">${paciente.nome}</span> ${tag}`;
+                    lista.appendChild(item);
+                });
+            } catch (e) { console.log("Erro ao atualizar"); }
+        }
+
+        async function chamarProximo() {
+            const resposta = await fetch('/chamar', { method: 'POST' });
+            const resultado = await resposta.json();
+
+            if (resposta.ok) {
+                atualizarDados(); 
+            } else {
+                alert(resultado.mensagem);
+            }
+        }
+
+        // Polling para o médico ver a fila crescendo em tempo real
+        setInterval(atualizarDados, 3000);
+        atualizarDados();
+    </script>
+</body>
+</html>

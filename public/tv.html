@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>TV - Painel de Atendimento</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --verde-escuro: #064e3b;
+            --verde-claro: #16a34a;
+            --verde-neon: #22c55e;
+            --branco: #ffffff;
+            --fonte-titulo: 'Montserrat', sans-serif;
+            --fonte-corpo: 'Inter', sans-serif;
+        }
+
+        body { 
+            background-color: var(--verde-escuro); 
+            color: var(--branco); 
+            font-family: var(--fonte-corpo); 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            overflow: hidden;
+            transition: background-color 0.5s ease;
+        }
+
+        /* Topo com Relógio */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 50px;
+            background: rgba(0,0,0,0.25);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        #relogio { 
+            font-family: var(--fonte-titulo);
+            font-size: 2.2rem; 
+            font-weight: 700; 
+            letter-spacing: -1px;
+        }
+
+        .layout-principal {
+            display: flex;
+            flex: 1;
+            padding: 40px;
+            gap: 40px;
+        }
+
+        /* Painel Principal (Quem foi chamado agora) */
+        .painel-chamada {
+            flex: 2;
+            background: var(--branco);
+            color: var(--verde-escuro);
+            border-radius: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            border: 8px solid rgba(255,255,255,0.1);
+        }
+
+        .label { 
+            font-family: var(--fonte-titulo);
+            font-size: 2rem; 
+            text-transform: uppercase; 
+            color: var(--verde-claro); 
+            font-weight: 800; 
+            letter-spacing: 4px;
+        }
+
+        #nomePaciente { 
+            font-family: var(--fonte-titulo);
+            font-size: 8rem; 
+            margin: 20px 0; 
+            text-align: center; 
+            line-height: 0.9;
+            font-weight: 900;
+            color: #111827; /* Um quase preto para dar contraste */
+        }
+
+        #tipoAtendimento { 
+            font-family: var(--fonte-titulo);
+            font-size: 1.8rem; 
+            background: #fef08a; 
+            padding: 12px 40px; 
+            border-radius: 100px; 
+            color: #854d0e; 
+            font-weight: 800; 
+            display: none;
+            box-shadow: 0 4px 0 #ca8a04;
+        }
+
+        /* Lateral (Últimos chamados) */
+        .historico {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border-radius: 40px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .historico h2 { 
+            font-family: var(--fonte-titulo);
+            font-size: 1.8rem;
+            color: var(--verde-neon);
+            border-bottom: 2px solid rgba(34, 197, 94, 0.3); 
+            padding-bottom: 15px; 
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lista-historico { list-style: none; padding: 0; margin: 0; }
+        
+        .historico-item { 
+            padding: 20px 0; 
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Banner de Ativação de Som */
+        #avisoSom {
+            position: fixed;
+            top: 0; width: 100%;
+            background: #facc15; color: #854d0e;
+            text-align: center; padding: 15px;
+            font-family: var(--fonte-titulo);
+            font-weight: 800; cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="avisoSom" onclick="ativarSom()">⚠️ TOQUE NA TELA PARA ATIVAR O SOM DO PAINEL</div>
+
+    <div class="header">
+        <div style="font-family: 'Montserrat'; font-weight: 800; font-size: 1.8rem; letter-spacing: -1px;">
+            <span style="color: var(--verde-neon)">✚</span> QUERO SAÚDE
+        </div>
+        <div id="relogio">00:00:00</div>
+    </div>
+
+    <div class="layout-principal">
+        <div class="painel-chamada">
+            <div class="label">Chamando</div>
+            <h1 id="nomePaciente">---</h1>
+            <div id="tipoAtendimento">PRIORITÁRIO</div>
+        </div>
+
+        <div class="historico">
+            <h2>Histórico</h2>
+            <ul id="listaHistorico" class="lista-historico">
+            </ul>
+        </div>
+    </div>
+
+    <audio id="somChamada" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+
+    <script>
+        const elementoNome = document.getElementById('nomePaciente');
+        const elementoTipo = document.getElementById('tipoAtendimento');
+        const listaHistorico = document.getElementById('listaHistorico');
+        const som = document.getElementById('somChamada');
+        let ultimosChamados = [];
+
+        setInterval(() => {
+            const agora = new Date();
+            document.getElementById('relogio').innerText = agora.toLocaleTimeString('pt-BR');
+        }, 1000);
+
+        function ativarSom() {
+            document.getElementById('avisoSom').style.display = 'none';
+        }
+
+        async function escutarServidor() {
+            try {
+                const resposta = await fetch('/esperar-chamada');
+                const dados = await resposta.json();
+
+                if (dados.chamadoAtual) {
+                    const paciente = dados.chamadoAtual;
+                    
+                    elementoNome.innerText = paciente.nome;
+                    elementoTipo.style.display = paciente.prioridade === 1 ? 'block' : 'none';
+
+                    if (ultimosChamados.length >= 3) ultimosChamados.pop();
+                    ultimosChamados.unshift(paciente.nome);
+                    
+                    listaHistorico.innerHTML = ultimosChamados
+                        .map(nome => `<li class="historico-item">${nome}</li>`)
+                        .join('');
+                    
+                    som.play().catch(() => {});
+                    document.body.style.backgroundColor = "#15803d";
+                    setTimeout(() => { document.body.style.backgroundColor = "#064e3b"; }, 1000);
+                }
+
+                escutarServidor();
+            } catch (erro) {
+                setTimeout(escutarServidor, 3000);
+            }
+        }
+
+        escutarServidor();
+    </script>
+</body>
+</html>
