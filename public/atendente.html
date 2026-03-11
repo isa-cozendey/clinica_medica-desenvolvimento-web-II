@@ -143,10 +143,10 @@
     <div class="container">
         <div class="card-cadastro">
             <h2>Recepção</h2>
-            <p class="subtitle">Cadastre o paciente para entrar na fila de espera.</p>
+            <p class="subtitle">Cadastro de pacientes</p>
             
             <label>Nome Completo</label>
-            <input type="text" id="nome" placeholder="Ex: Isadora Oliveira" autocomplete="off">
+            <input type="text" id="nome" autocomplete="off">
             
             <label>Tipo de Prioridade</label>
             <select id="prioridade">
@@ -154,7 +154,7 @@
                 <option value="1">Atendimento Prioritário</option>
             </select>
 
-            <button onclick="cadastrar()">Confirmar Registro</button>
+            <button onclick="cadastrar()">Confirmar</button>
             <p id="msg"></p>
         </div>
 
@@ -169,10 +169,6 @@
                 <span id="ultimoNome" style="color: #64748b;">Nenhum até agora</span>
             </div>
 
-            <div class="info-box" style="background: #f8fafc;">
-                <small style="color: #94a3b8; font-weight: bold; text-transform: uppercase;">Dica de Uso</small>
-                <p style="font-size: 0.9rem; color: #475569; margin: 5px 0 0;">Use a tecla <strong>Enter</strong> para agilizar o cadastro do paciente.</p>
-            </div>
         </div>
     </div>
 
@@ -210,10 +206,8 @@
             }
         }
 
-        // Atalho Enter
         document.addEventListener('keypress', (e) => { if (e.key === 'Enter') cadastrar(); });
 
-        // Atualiza a contagem a cada 3 segundos
         setInterval(atualizarStats, 3000);
         atualizarStats();
     </script>

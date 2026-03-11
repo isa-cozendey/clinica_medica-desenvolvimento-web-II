@@ -30,10 +30,9 @@
             gap: 30px;
             max-width: 1100px;
             width: 95%;
-            height: 80vh; /* Altura fixa para scroll na lista */
+            height: 80vh; 
         }
 
-        /* Lado Esquerdo: Ação e Status */
         .col-acao {
             flex: 1.2;
             display: flex;
@@ -49,7 +48,6 @@
             text-align: center;
         }
 
-        /* Lado Direito: Fila de Espera */
         .col-fila {
             flex: 0.8;
             background: var(--branco);
@@ -116,7 +114,6 @@
 
         .btn-chamar:active { transform: scale(0.98); }
 
-        /* Estilo da Fila */
         .lista-espera { 
             list-style: none; 
             padding: 0; 
@@ -154,7 +151,6 @@
             text-transform: uppercase;
         }
 
-        /* Scrollbar bonitinha */
         .lista-espera::-webkit-scrollbar { width: 8px; }
         .lista-espera::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
@@ -172,10 +168,6 @@
                 </button>
             </div>
 
-            <div style="background: var(--verde-escuro); padding: 25px; border-radius: 30px; color: white;">
-                <p style="margin: 0; opacity: 0.7; font-size: 0.9rem;">Doutor(a),</p>
-                <p style="margin: 5px 0 0; font-weight: 600;">O sistema organiza automaticamente os pacientes prioritários no topo da fila.</p>
-            </div>
         </div>
 
         <div class="col-fila">
